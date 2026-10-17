@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21st Century Monetary Policy — Interactive Book Summary</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1c2333; --muted:#5b6478;
+    --accent:#1f6f54; --accent2:#0e4d92; --gold:#b8860b; --chip:#e8f3ee;
+    --border:#e3e6ef; --warn:#fff6e5; --shadow:0 2px 12px rgba(20,30,60,.08);
+  }
+  [data-theme="dark"]{
+    --bg:#11151f; --card:#1a2130; --ink:#e8ebf4; --muted:#9aa3b8;
+    --accent:#4cc39a; --accent2:#6aa7e8; --gold:#e3b23c; --chip:#1f3a31;
+    --border:#2a3348; --warn:#2e2614; --shadow:0 2px 12px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.6;transition:background .3s,color .3s}
+  .sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  #progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;z-index:99;transition:width .1s}
+  header{background:linear-gradient(135deg,#0e4d92 0%,#1f6f54 60%,#143d2e 100%);color:#fff;padding:52px 20px 44px;text-align:center}
+  header .kicker{font-family:inherit;letter-spacing:3px;text-transform:uppercase;font-size:.75rem;opacity:.85}
+  header h1{font-size:clamp(1.7rem,4.5vw,2.8rem);margin:.4em 0 .2em;font-weight:700}
+  header .sub{font-style:italic;opacity:.9;max-width:720px;margin:0 auto}
+  .meta-chips{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .meta-chips span{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 14px;font-size:.78rem}
+  #viewsChip{cursor:default}
+  nav{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--border);box-shadow:var(--shadow);display:flex;justify-content:center;gap:4px;flex-wrap:wrap;padding:8px 10px}
+  nav button{font-family:inherit;background:none;border:none;color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s}
+  nav button:hover{background:var(--chip);color:var(--accent)}
+  nav button.active{background:var(--accent);color:#fff}
+  #themeBtn{margin-left:8px;border:1px solid var(--border)}
+  main{max-width:1000px;margin:0 auto;padding:30px 18px 70px}
+  section.tab{display:none;animation:fadein .35s}
+  section.tab.show{display:block}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h2{color:var(--accent2);margin:26px 0 12px;font-size:1.45rem}
+  h3{margin:18px 0 8px;color:var(--accent)}
+  p{margin:10px 0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:var(--shadow)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem;background:var(--card);border-radius:10px;overflow:hidden}
+  th{background:var(--accent2);color:#fff;text-align:left;padding:10px 12px;font-weight:600}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:hover td{background:var(--chip)}
+  .pill{display:inline-block;background:var(--chip);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:.75rem;margin:2px 4px 2px 0;white-space:nowrap}
+  .big-num{font-size:2rem;font-weight:700;color:var(--accent)}
+  details{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:10px 0;overflow:hidden}
+  details summary{cursor:pointer;padding:14px 18px;font-weight:700;list-style:none;display:flex;align-items:center;gap:10px}
+  details summary::before{content:"▸";color:var(--accent);transition:transform .2s}
+  details[open] summary::before{transform:rotate(90deg)}
+  details .body{padding:0 18px 16px}
+  .era{border-left:4px solid var(--gold);padding-left:14px;margin:16px 0}
+  .era .who{font-weight:700}
+  .era .when{color:var(--muted);font-size:.85rem}
+  input[type=search]{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--ink);font-size:.95rem;margin:8px 0 4px}
+  .takeaway{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:10px 0}
+  .takeaway .n{min-width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:inherit}
+  .lesson{border-left:4px solid var(--accent2)}
+  .warnbox{background:var(--warn);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:.92rem}
+  .quote{font-style:italic;color:var(--muted);border-left:3px solid var(--gold);padding-left:14px;margin:14px 0}
+  .quiz-q{margin:14px 0}
+  .quiz-q .opts button{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1px solid var(--border);background:var(--card);color:var(--ink);border-radius:10px;cursor:pointer;font-family:inherit;font-size:.92rem}
+  .quiz-q .opts button:hover{border-color:var(--accent)}
+  .quiz-q .opts button.right{background:#1f6f54;color:#fff;border-color:#1f6f54}
+  .quiz-q .opts button.wrong{background:#9c3a3a;color:#fff;border-color:#9c3a3a}
+  .scorebar{font-weight:700;color:var(--accent);margin:10px 0}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:26px 16px;border-top:1px solid var(--border)}
+  .fun{font-size:.85rem;color:var(--muted);font-style:italic}
+  @media(max-width:640px){nav{gap:2px}nav button{padding:7px 9px;font-size:.78rem}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header>
+  <div class="kicker sans">Interactive Book Summary</div>
+  <h1>21st Century Monetary Policy</h1>
+  <div class="sub">The Federal Reserve from the Great Inflation to COVID-19 — <strong>Ben S. Bernanke</strong> (2022)</div>
+  <div class="meta-chips sans">
+    <span>📖 Fed history &amp; policy</span>
+    <span>🏛️ By a former Fed Chair</span>
+    <span>⏱️ ~12 min read</span>
+    <span id="viewsChip">👁️ Views: <b id="viewCount">…</b></span>
+  </div>
+</header>
+
+<nav class="sans" id="nav">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="eras">The Fed Eras</button>
+  <button data-tab="concepts">Key Concepts</button>
+  <button data-tab="toolkit">The Toolkit</button>
+  <button data-tab="takeaways">Key Takeaways</button>
+  <button data-tab="investor">Investor Playbook</button>
+  <button data-tab="actions">Action Steps</button>
+  <button data-tab="quiz">Quiz</button>
+  <button id="themeBtn" title="Toggle dark mode">🌗</button>
+</nav>
+
+<main>
+
+<!-- ================= OVERVIEW ================= -->
+<section class="tab show" id="overview">
+  <h2>What this book is about</h2>
+  <div class="card">
+    <p>Bernanke — Fed Chair from 2006 to 2014 and the man who steered the central bank through the Global Financial Crisis — tells the story of how the Federal Reserve evolved from the inflation chaos of the 1960s–70s into today's institution, and then asks the forward-looking question: <em>is the Fed's toolkit powerful enough for the 21st century?</em></p>
+    <p>His core argument: monetary policy has been reshaped by <strong>three slow-moving economic forces</strong>, and nearly everything the modern Fed does — QE, forward guidance, average inflation targeting, press conferences — is a response to them.</p>
+  </div>
+
+  <h2>The three forces that changed everything</h2>
+  <div class="grid">
+    <div class="card"><div class="big-num">1</div><h3>The fall of r* (the neutral rate)</h3><p>The "normal" level of interest rates has fallen for decades (aging populations, slower productivity growth, global savings glut). Low neutral rates mean the Fed hits <strong>zero</strong> quickly in recessions — leaving little room to cut. This is the central constraint of modern policy.</p></div>
+    <div class="card"><div class="big-num">2</div><h3>The flattening Phillips curve</h3><p>Inflation became much less responsive to unemployment, largely because expectations got <strong>anchored</strong> after Volcker. Benefit: the Fed can let labor markets run hot. Risk: once inflation does move, it's harder to read and steer.</p></div>
+    <div class="card"><div class="big-num">3</div><h3>Rising financial-stability risk</h3><p>A bigger, more complex, more leveraged financial system — with much of the risk outside regulated banks ("shadow banking") — means crises can now do what inflation did in the 70s: derail the economy. The Fed must now be a financial firefighter, not just an inflation manager.</p></div>
+  </div>
+
+  <h2>The book in one table</h2>
+  <table class="sans">
+    <tr><th>Question</th><th>Bernanke's answer</th></tr>
+    <tr><td>Why did Fed policy change so much?</td><td>Falling neutral rates, anchored inflation expectations, and financial-stability risk forced new tools and new frameworks.</td></tr>
+    <tr><td>Do the new tools (QE + forward guidance) work?</td><td>Yes — evidence says they add roughly the equivalent of <strong>3 percentage points</strong> of extra rate cuts. Powerful, but not unlimited.</td></tr>
+    <tr><td>Is the toolkit enough for the next crisis?</td><td>Probably — <em>if</em> the neutral rate doesn't fall much further. If it does, the Fed may need new options (higher inflation target, yield-curve control, coordination with fiscal policy).</td></tr>
+    <tr><td>Should the Fed pop asset bubbles with rates?</td><td>No — interest rates are too blunt. Use regulation and macroprudential tools first; keep monetary policy focused on jobs and inflation.</td></tr>
+    <tr><td>Does Fed independence still matter?</td><td>Enormously. Political interference (Nixon–Burns) helped cause the Great Inflation. Independence plus transparency and accountability is the winning formula.</td></tr>
+  </table>
+
+  <div class="quote">The theme of the book: modern monetary policy is best understood as a decades-long adaptation to a changing economy — not a series of improvisations.</div>
+  <p class="fun">Tip: use the tabs above — each one is a self-contained layer of the book. The quiz at the end tells you if any of it stuck. 🎓</p>
+</section>
+
+<!-- ================= ERAS ================= -->
+<section class="tab" id="eras">
+  <h2>The Fed, chair by chair</h2>
+  <p>The book's first three parts are a narrative history. Click each era to expand.</p>
+
+  <details open><summary>🔥 Burns &amp; Miller (1970–79) — The Great Inflation</summary><div class="body">
+    <div class="era"><div class="who">Arthur Burns, G. William Miller</div><div class="when">Inflation peaks above 13%</div></div>
+    <p>The defining failure. Causes: Vietnam/Great Society fiscal overheating, oil shocks, a mistaken belief that inflation was "cost-push" and beyond the Fed's control, over-optimism about how low unemployment could go — and critically, <strong>political pressure</strong>: Burns eased policy to help Nixon's 1972 re-election. Wage-price controls treated symptoms, not the disease. Inflation expectations became unanchored, embedding inflation into wages and prices.</p>
+    <p><span class="pill">Lesson</span> Inflation is ultimately the central bank's responsibility — and losing public confidence in price stability is extremely costly to regain.</p>
+  </div></details>
+
+  <details><summary>🧊 Volcker (1979–87) — Breaking inflation's back</summary><div class="body">
+    <div class="era"><div class="who">Paul Volcker</div><div class="when">Fed funds rate near 20%; deep 1981–82 recession</div></div>
+    <p>Volcker crushed inflation with brutally tight money, accepting a severe double-dip recession and ~11% unemployment. He proved a determined central bank <em>can</em> control inflation — and that credibility, once earned, pays dividends for decades. The "Volcker disinflation" anchored expectations and set the stage for the long moderation that followed.</p>
+    <p><span class="pill">Lesson</span> Credibility is the central bank's most valuable asset. It is bought with short-term pain.</p>
+  </div></details>
+
+  <details><summary>📈 Greenspan (1987–2006) — The Great Moderation</summary><div class="body">
+    <div class="era"><div class="who">Alan Greenspan</div><div class="when">Long expansions, low inflation, rising transparency</div></div>
+    <p>Highlights: deft handling of the 1987 crash, the masterstroke of recognizing the 1990s <strong>productivity boom</strong> (letting unemployment fall without inflation), "risk-management" policymaking, and the 1994 soft landing. The Fed slowly became more transparent (announcing rate decisions, then statements). Misses: the "irrational exuberance" dilemma, the 2000s housing/credit buildup, and a deregulatory faith that markets would self-police. The era also birthed the idea of the <strong>"Greenspan put."</strong></p>
+    <p><span class="pill">Lesson</span> Diagnosing structural change (like productivity) in real time is the hardest and highest-value call a central banker makes.</p>
+  </div></details>
+
+  <details><summary>🏚️ Bernanke (2006–14) — Crisis and invention</summary><div class="body">
+    <div class="era"><div class="who">Ben Bernanke</div><div class="when">GFC, zero rates, QE1–QE3, 2% target made explicit (2012)</div></div>
+    <p>The 2008 crisis was a classic financial panic in modern (shadow-banking) form: runs on repo and money funds rather than bank deposits. The Fed acted as <strong>lender of last resort</strong> on a massive scale, cut rates to zero, then invented the modern toolkit: <strong>quantitative easing</strong> (large-scale asset purchases) and <strong>forward guidance</strong>. The 2013 <strong>"taper tantrum"</strong> showed how violently markets react to communication about balance-sheet policy. Dodd-Frank rebuilt the regulatory perimeter.</p>
+    <p><span class="pill">Lesson</span> At the zero lower bound, words and balance sheets become the policy instruments.</p>
+  </div></details>
+
+  <details><summary>🪜 Yellen (2014–18) — The patient liftoff</summary><div class="body">
+    <div class="era"><div class="who">Janet Yellen</div><div class="when">First hike Dec 2015; gradual normalization</div></div>
+    <p>Yellen managed the slow exit from zero: ending QE3, lifting rates cautiously, starting balance-sheet runoff. Her bet — that labor markets could run hotter than old models implied without stoking inflation — proved right, pulling marginalized workers back into jobs. A masterclass in data-dependent gradualism.</p>
+    <p><span class="pill">Lesson</span> With a flat Phillips curve, patience toward tight labor markets has large social payoffs and low inflation cost.</p>
+  </div></details>
+
+  <details><summary>🦠 Powell (2018– ) — Repo, pandemic, and a new framework</summary><div class="body">
+    <div class="era"><div class="who">Jerome Powell</div><div class="when">COVID crash; FAIT framework (Aug 2020); inflation surge</div></div>
+    <p>Powell faced unprecedented political pressure from President Trump (and held the line), the 2019 repo squeeze, and then COVID-19 — to which the Fed responded with overwhelming force: rates to zero, unlimited QE, and novel facilities lending to corporations, municipalities and Main Street (backstopped by Treasury). In 2020 the Fed adopted <strong>flexible average inflation targeting (FAIT)</strong>: after inflation runs below 2%, aim moderately above 2% for a time, and treat employment shortfalls (not just deviations) as the target. The book closes as the 2021–22 inflation surge tests that framework — Bernanke acknowledges the Fed was slow to react but argues anchored expectations made the fight winnable without a Volcker-scale recession.</p>
+    <p><span class="pill">Lesson</span> Frameworks designed for too-low inflation can be wrong-footed when supply shocks push inflation up. Humility required.</p>
+  </div></details>
+</section>
+
+<!-- ================= CONCEPTS ================= -->
+<section class="tab" id="concepts">
+  <h2>Key concepts — searchable reference</h2>
+  <input type="search" id="conceptSearch" class="sans" placeholder="🔍 Filter concepts… try 'QE', 'r*', 'Phillips'">
+  <table class="sans" id="conceptTable">
+    <tr><th style="width:24%">Concept</th><th>What it means</th><th style="width:30%">Why it matters</th></tr>
+    <tr><td><b>Neutral rate (r*)</b></td><td>The interest rate consistent with full employment and stable inflation. Has declined for ~40 years.</td><td>Low r* → Fed hits zero in recessions → conventional rate cuts run out → need for QE etc.</td></tr>
+    <tr><td><b>Effective lower bound (ELB/ZLB)</b></td><td>Rates can't go (much) below zero, since people can hold cash.</td><td>The defining constraint of 21st-century policy; the reason the new toolkit exists.</td></tr>
+    <tr><td><b>Phillips curve (flattened)</b></td><td>The link between unemployment and inflation; now much weaker than in the 1960s–70s.</td><td>Lets the Fed run labor markets hot — but makes inflation harder to forecast and control.</td></tr>
+    <tr><td><b>Anchored expectations</b></td><td>Public belief that inflation will return to ~2% regardless of shocks.</td><td>Bernanke calls this the Fed's crown jewel — it makes inflation self-stabilizing and stimulus safer.</td></tr>
+    <tr><td><b>Quantitative easing (QE)</b></td><td>Large-scale purchases of Treasuries and MBS to push down long-term rates once short rates hit zero.</td><td>Works mainly via portfolio-balance and signaling channels; compresses term premiums, lifts asset prices.</td></tr>
+    <tr><td><b>Forward guidance</b></td><td>Explicit communication about the future path of rates ("low for long", thresholds, dot plot).</td><td>At zero, promises about the future are the policy. Credibility is the transmission mechanism.</td></tr>
+    <tr><td><b>Inflation targeting / 2% target</b></td><td>Formal public goal for inflation (made explicit by the Fed in 2012).</td><td>Anchors expectations; the foundation of modern credibility.</td></tr>
+    <tr><td><b>FAIT (average inflation targeting)</b></td><td>2020 framework: make up for below-2% periods by aiming moderately above 2% afterward.</td><td>Designed to fight the low-inflation/ELB trap by promising to be "lower for longer."</td></tr>
+    <tr><td><b>Taper tantrum (2013)</b></td><td>Bond-market convulsion when Bernanke hinted QE purchases would slow.</td><td>Proof that <em>communication about</em> balance-sheet policy moves markets as much as the policy itself.</td></tr>
+    <tr><td><b>Lender of last resort</b></td><td>Central bank lending freely against good collateral during panics (Bagehot's dictum).</td><td>The Fed's founding purpose, rediscovered at scale in 2008 and 2020.</td></tr>
+    <tr><td><b>Shadow banking</b></td><td>Credit intermediation outside regulated banks — repo, money funds, securitization.</td><td>Where both 2008 and the March 2020 "dash for cash" ignited; still a regulatory gap.</td></tr>
+    <tr><td><b>Macroprudential policy</b></td><td>System-wide financial regulation: capital buffers, stress tests, leverage limits.</td><td>Bernanke's preferred first line of defense against bubbles — not interest rates.</td></tr>
+    <tr><td><b>"Fed put"</b></td><td>Market belief that the Fed will ease when asset prices fall sharply.</td><td>Real but often overstated; the Fed responds to economic fallout, not stock prices per se — yet it shapes risk-taking.</td></tr>
+    <tr><td><b>Negative rates / YCC</b></td><td>Tools used abroad: charging on reserves (Europe, Japan); pegging bond yields (Japan, Australia).</td><td>Bernanke sees them as usable in extremis for the US but inferior to QE + guidance.</td></tr>
+    <tr><td><b>Fiscal–monetary coordination</b></td><td>Fiscal policy (spending/taxes) doing more of the stabilization work when rates are at zero.</td><td>A key conclusion: at the ELB, monetary policy needs help — fiscal policy is more powerful there.</td></tr>
+    <tr><td><b>Fed independence</b></td><td>Insulation of rate decisions from short-term politics, paired with accountability to Congress.</td><td>The Nixon–Burns episode is the cautionary tale; independence underpins credibility and low inflation.</td></tr>
+  </table>
+</section>
+
+<!-- ================= TOOLKIT ================= -->
+<section class="tab" id="toolkit">
+  <h2>The 21st-century toolkit — Bernanke's scorecard</h2>
+  <p>Part IV of the book is an evaluation of every tool the Fed has or could adopt. Summary verdicts:</p>
+  <table class="sans">
+    <tr><th>Tool</th><th>Verdict</th><th>Notes</th></tr>
+    <tr><td><b>QE (asset purchases)</b></td><td>✅ Keep — core tool</td><td>Effective at easing financial conditions; diminishing but real returns; manageable side effects.</td></tr>
+    <tr><td><b>Forward guidance</b></td><td>✅ Keep — core tool</td><td>Cheap and powerful if credible; works best when outcome-based and clear.</td></tr>
+    <tr><td><b>QE + guidance combined</b></td><td>✅ ≈ 3 extra percentage points of rate cuts</td><td>The book's headline quantitative claim — enough for most recessions if r* stays ≥ ~2%.</td></tr>
+    <tr><td><b>Negative interest rates</b></td><td>🟡 Possible, not preferred</td><td>Modestly effective abroad; legal/political/money-market frictions in the US.</td></tr>
+    <tr><td><b>Yield-curve control</b></td><td>🟡 Plausible for shorter maturities</td><td>Worked in Australia/Japan at times; risks a huge balance sheet if the peg is challenged.</td></tr>
+    <tr><td><b>Raising the inflation target (e.g. 3–4%)</b></td><td>🟡 Logical but risky</td><td>Would create rate headroom, but risks de-anchoring expectations and breaking the 2% social contract.</td></tr>
+    <tr><td><b>Price-level / NGDP targeting</b></td><td>🟡 Theoretically elegant</td><td>Hard to communicate; FAIT is the pragmatic cousin the Fed actually chose.</td></tr>
+    <tr><td><b>Using rate hikes to pop bubbles</b></td><td>❌ Rejected</td><td>Too blunt — enormous collateral damage to jobs for uncertain stability gains. Use regulation instead.</td></tr>
+    <tr><td><b>"Helicopter money" / MMT-style finance</b></td><td>❌ Rejected as standing policy</td><td>Blurs fiscal/monetary lines and threatens independence; ordinary fiscal policy can do the job.</td></tr>
+    <tr><td><b>Fiscal policy at the ELB</b></td><td>✅ Essential complement</td><td>Automatic stabilizers should be strengthened; monetary policy can't carry stabilization alone.</td></tr>
+  </table>
+  <div class="warnbox">⚠️ <b>Bernanke's bottom line:</b> the current toolkit is <em>probably adequate</em> — unless the neutral rate falls substantially further, in which case more radical options (higher target, formal fiscal coordination) move onto the table.</div>
+</section>
+
+<!-- ================= TAKEAWAYS ================= -->
+<section class="tab" id="takeaways">
+  <h2>Ten key takeaways to remember</h2>
+  <div class="takeaway"><div class="n">1</div><div><b>Inflation is a choice.</b> The Great Inflation happened because the Fed believed it couldn't (and politically shouldn't) stop it. Volcker proved otherwise. Central banks own inflation outcomes over the medium term.</div></div>
+  <div class="takeaway"><div class="n">2</div><div><b>Credibility compounds like interest.</b> Decades of post-Volcker discipline bought anchored expectations — the asset that let the Fed fight 2008 and 2020 aggressively without an inflation panic (until supply shocks tested it).</div></div>
+  <div class="takeaway"><div class="n">3</div><div><b>The neutral rate is the master variable.</b> Low r* explains low bond yields, the zero-bound problem, QE, forward guidance, and the entire modern framework debate. Watch estimates of r* like a hawk.</div></div>
+  <div class="takeaway"><div class="n">4</div><div><b>At zero, communication IS the policy.</b> Statements, dot plots, press conferences, and framework documents move trillions. The taper tantrum was caused by a few sentences.</div></div>
+  <div class="takeaway"><div class="n">5</div><div><b>QE works — through portfolio rebalancing and signaling.</b> It lowers term premiums, pushes investors into riskier assets, and signals "low for long." Roughly: big QE programs ≈ meaningful rate cuts.</div></div>
+  <div class="takeaway"><div class="n">6</div><div><b>Financial panics rhyme.</b> 1907, 2008, March 2020: short-term funding runs on opaque leverage. The venue changes (deposits → repo → Treasury market), the mechanics don't.</div></div>
+  <div class="takeaway"><div class="n">7</div><div><b>Don't use a sledgehammer on bubbles.</b> Monetary policy is too blunt for financial stability; targeted regulation and capital buffers should do that job.</div></div>
+  <div class="takeaway"><div class="n">8</div><div><b>Monetary policy has limits — fiscal matters.</b> Near the lower bound, fiscal stimulus is unusually powerful and necessary. The 2020 response worked because both engines fired.</div></div>
+  <div class="takeaway"><div class="n">9</div><div><b>Independence is fragile and precious.</b> From Nixon pressuring Burns to Trump pressuring Powell — political interference is the historical road to inflation. Transparency and accountability are the price of independence.</div></div>
+  <div class="takeaway"><div class="n">10</div><div><b>Frameworks must evolve.</b> FAIT was built to fight lowflation and was immediately stress-tested by high inflation. No framework is final; adaptation is the Fed's real tradition.</div></div>
+</section>
+
+<!-- ================= INVESTOR ================= -->
+<section class="tab" id="investor">
+  <h2>The investor's playbook</h2>
+  <p>Bernanke writes as a policymaker, but the investment implications leap off every page:</p>
+
+  <div class="takeaway lesson"><div class="n">📡</div><div><b>Don't fight the Fed — but know <em>which</em> Fed.</b> Policy regimes matter more than individual meetings. Identify the era you're in (tightening cycle, ELB + QE, framework shift) and position for the regime, not the headline.</div></div>
+  <div class="takeaway lesson"><div class="n">🗣️</div><div><b>Trade the words, not just the rates.</b> Guidance language, dot-plot shifts, and framework changes move long-term yields more than the actual funds rate. The taper tantrum (+~100bp on the 10-year from talk alone) is the canonical case study.</div></div>
+  <div class="takeaway lesson"><div class="n">⚓</div><div><b>Watch inflation expectations, not just inflation.</b> Breakevens and survey expectations tell you whether the anchor is holding. Anchored = dips in inflation/growth get policy support; de-anchoring = everything changes (1970s playbook: real assets, short duration).</div></div>
+  <div class="takeaway lesson"><div class="n">📉</div><div><b>Low r* = structurally low returns on safe assets.</b> The decline in neutral rates is demographic and global — it drives "TINA" flows into equities, credit, and real estate. Valuations can stay historically high when the discount rate is structurally low; just don't confuse that with safety.</div></div>
+  <div class="takeaway lesson"><div class="n">🛡️</div><div><b>The "Fed put" is real but conditional.</b> The Fed eases when market stress threatens the <em>economy</em> — not to rescue your portfolio. It will NOT ease into an inflation problem (2022 proved it). The put has a deductible, and inflation voids the warranty.</div></div>
+  <div class="takeaway lesson"><div class="n">🌊</div><div><b>QE tides lift (and taper drains) all boats.</b> Balance-sheet expansion compresses term premiums and credit spreads and boosts risk assets; QT does the reverse, slowly. Track the direction of the balance sheet as a core market input.</div></div>
+  <div class="takeaway lesson"><div class="n">🏦</div><div><b>Crises start in funding markets.</b> Repo, money funds, Treasury-market plumbing — stress appears there before equities understand it. In a panic, expect massive Fed liquidity; historically, the panic trough near facility announcements was a generational buying window (2009, 2020).</div></div>
+  <div class="takeaway lesson"><div class="n">🔥</div><div><b>A flat Phillips curve cuts both ways.</b> Hot labor markets no longer guarantee inflation — so don't reflexively short bonds on low unemployment. But supply shocks + fiscal surges can still ignite inflation fast (2021). Respect both regimes.</div></div>
+  <div class="takeaway lesson"><div class="n">🏛️</div><div><b>Price political risk to independence.</b> Attacks on central-bank independence are historically the leading indicator of inflationary eras. If independence erodes, buy inflation protection early.</div></div>
+  <div class="takeaway lesson"><div class="n">⚖️</div><div><b>Low-rate eras breed the next crisis.</b> Reaching for yield builds leverage in dark corners (shadow banking). Late in low-rate cycles, favor quality and liquidity; the exit doors shrink when everyone owns the same illiquid carry trades.</div></div>
+
+  <div class="warnbox">📌 <b>Not investment advice</b> — these are lessons distilled from the book's analysis. Markets, policy, and your situation differ; consult a financial advisor before acting.</div>
+</section>
+
+<!-- ================= ACTIONS ================= -->
+<section class="tab" id="actions">
+  <h2>Recommendations &amp; action steps</h2>
+
+  <h3>📅 A monitoring routine (what to actually watch)</h3>
+  <table class="sans">
+    <tr><th>Frequency</th><th>What</th><th>Why (per the book's logic)</th></tr>
+    <tr><td>8×/year</td><td>FOMC statement + Powell's press conference; compare wording to last meeting</td><td>Language changes = policy changes at the margin</td></tr>
+    <tr><td>Quarterly</td><td>Summary of Economic Projections ("dot plot") + r* estimates (e.g. Laubach-Williams)</td><td>The rate path and the neutral-rate anchor set valuation math</td></tr>
+    <tr><td>Monthly</td><td>Inflation expectations: 5y5y breakevens, Michigan &amp; NY Fed surveys</td><td>The anchor is the whole game; de-anchoring changes every playbook</td></tr>
+    <tr><td>Weekly</td><td>Fed balance sheet (H.4.1) — QE/QT direction and pace</td><td>Term premiums, liquidity, and risk appetite follow the balance sheet</td></tr>
+    <tr><td>In stress</td><td>Funding markets: repo rates, money-fund flows, Treasury liquidity, FRA-OIS</td><td>Panics ignite in the plumbing before they hit prices</td></tr>
+  </table>
+
+  <h3>✅ Portfolio-level action steps</h3>
+  <div class="takeaway"><div class="n">1</div><div><b>Classify the current regime</b> (easing/tightening × anchored/unanchored expectations) before any allocation decision — the same asset behaves differently in each quadrant.</div></div>
+  <div class="takeaway"><div class="n">2</div><div><b>Hold a real-asset / inflation-protection sleeve</b> (e.g., TIPS) as insurance against the low-probability, high-cost de-anchoring scenario the 1970s chapters describe.</div></div>
+  <div class="takeaway"><div class="n">3</div><div><b>Stress-test your duration.</b> Know what a 2013-style 100bp guidance shock does to your bond and growth-equity exposure.</div></div>
+  <div class="takeaway"><div class="n">4</div><div><b>Keep dry powder for panics.</b> The book's crisis chapters show the Fed will flood the system — plan in advance to deploy when facilities are announced, not after recovery is obvious.</div></div>
+  <div class="takeaway"><div class="n">5</div><div><b>Audit your "reach for yield."</b> In low-rate eras, ask of every high-yielding holding: what leverage or illiquidity am I actually being paid for?</div></div>
+  <div class="takeaway"><div class="n">6</div><div><b>Read the framework documents.</b> The Fed's Statement on Longer-Run Goals (reviewed ~every 5 years) is short, public, and tells you the reaction function — most investors never read it.</div></div>
+
+  <h3>🧠 For understanding (not just investing)</h3>
+  <p>Bernanke's recommendations for policy itself — useful for interpreting future Fed moves: keep QE and forward guidance as standard tools; strengthen automatic fiscal stabilizers; close shadow-banking regulatory gaps and widen macroprudential authority; protect Fed independence while expanding transparency; and stay open to framework evolution (FAIT and beyond) if r* keeps falling.</p>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="tab" id="quiz">
+  <h2>Did it stick? — 6-question quiz</h2>
+  <div class="scorebar sans" id="score">Score: 0 / 6</div>
+  <div id="quizBox" class="sans"></div>
+  <p class="fun" id="quizDone" style="display:none"></p>
+</section>
+
+</main>
+
+<footer class="sans">
+  Interactive summary of <i>21st Century Monetary Policy</i> by Ben S. Bernanke (W. W. Norton, 2022) · For personal study use ·
+  <span id="footerViews"></span>
+</footer>
+
+<script>
+/* ---------- Tabs ---------- */
+const nav=document.getElementById('nav');
+nav.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tab]');if(!b)return;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('show'));
+  document.getElementById(b.dataset.tab).classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---------- Dark mode ---------- */
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('theme',t)}catch(e){}}
+themeBtn.onclick=()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+try{if(localStorage.getItem('theme'))setTheme(localStorage.getItem('theme'))}catch(e){}
+
+/* ---------- Scroll progress ---------- */
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  document.getElementById('progress').style.width=p+'%';
+});
+
+/* ---------- Concept search ---------- */
+document.getElementById('conceptSearch').addEventListener('input',function(){
+  const q=this.value.toLowerCase();
+  document.querySelectorAll('#conceptTable tr').forEach((tr,i)=>{
+    if(i===0)return;
+    tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';
+  });
+});
+
+/* ---------- Simple views counter (works on GitHub Pages) ----------
+   Uses the free CounterAPI service; falls back to a local count if blocked. */
+(function(){
+  const el=document.getElementById('viewCount'),f=document.getElementById('footerViews');
+  function show(n,local){el.textContent=n.toLocaleString();f.textContent='👁️ '+n.toLocaleString()+(local?' views (this device)':' total views');}
+  fetch('https://api.counterapi.dev/v1/bernanke-21cmp-summary/pageviews/up')
+    .then(r=>r.json()).then(d=>show(d.count||d.value||1,false))
+    .catch(()=>{ // fallback: per-device counter
+      let n=1;try{n=(parseInt(localStorage.getItem('views')||'0',10)+1);localStorage.setItem('views',n)}catch(e){}
+      show(n,true);
+    });
+})();
+
+/* ---------- Quiz ---------- */
+const QUIZ=[
+ {q:"What does Bernanke identify as the master constraint of 21st-century monetary policy?",
+  opts:["The gold standard","The decline of the neutral rate (r*) and the zero lower bound","Cryptocurrency competition","Congressional budget rules"],a:1,
+  why:"Low r* means rates hit zero in recessions — the reason QE and forward guidance exist."},
+ {q:"Roughly how much extra 'rate-cut equivalent' do QE + forward guidance provide?",
+  opts:["About 0.5 percentage points","About 3 percentage points","About 10 percentage points","None — they are purely symbolic"],a:1,
+  why:"The book's headline estimate: ~3 percentage points — enough for most, not all, recessions."},
+ {q:"What caused the Great Inflation of the 1970s, in the book's telling?",
+  opts:["Oil shocks alone — the Fed was helpless","Policy errors, wrong models, and political pressure on the Fed","Excessive Fed independence","Deregulated banks"],a:1,
+  why:"Burns bowed to Nixon, misread inflation as 'cost-push', and expectations became unanchored."},
+ {q:"How does Bernanke think the Fed should deal with asset bubbles?",
+  opts:["Raise rates aggressively to pop them","Primarily regulation and macroprudential tools, not interest rates","Ignore them entirely","Ban speculation"],a:1,
+  why:"Rates are too blunt — the collateral damage to jobs outweighs uncertain stability gains."},
+ {q:"The 2013 'taper tantrum' demonstrated that…",
+  opts:["QE has no effect on markets","Communication about policy can move markets as much as policy itself","Congress controls bond yields","Banks were still insolvent"],a:1,
+  why:"A hint that purchases might slow sent 10-year yields up ~100bp. Words are the tool."},
+ {q:"What is FAIT, adopted in 2020?",
+  opts:["A rule to keep rates at exactly 2%","Flexible average inflation targeting — aim above 2% after periods below it","A fiscal stimulus program","A bank stress test"],a:1,
+  why:"Designed to fight the low-inflation trap by promising 'lower for longer' — then stress-tested by the 2021 inflation surge."}
+];
+let score=0,answered=0;
+const box=document.getElementById('quizBox');
+QUIZ.forEach((item,qi)=>{
+  const d=document.createElement('div');d.className='quiz-q card';
+  d.innerHTML='<b>Q'+(qi+1)+'. '+item.q+'</b><div class="opts"></div><p class="fun" style="display:none"></p>';
+  const opts=d.querySelector('.opts'),why=d.querySelector('p');
+  item.opts.forEach((o,oi)=>{
+    const b=document.createElement('button');b.textContent=o;
+    b.onclick=()=>{
+      if(d.dataset.done)return;d.dataset.done=1;answered++;
+      if(oi===item.a){b.classList.add('right');score++;}
+      else{b.classList.add('wrong');opts.children[item.a].classList.add('right');}
+      why.textContent='💡 '+item.why;why.style.display='block';
+      document.getElementById('score').textContent='Score: '+score+' / '+QUIZ.length;
+      if(answered===QUIZ.length){
+        const msg=score===6?'🏆 Perfect — Volcker would be proud.':score>=4?'📈 Solid — your expectations are well anchored.':'📉 Time to re-read a tab or two — don’t let your knowledge de-anchor!';
+        const done=document.getElementById('quizDone');done.textContent=msg;done.style.display='block';
+      }
+    };
+    opts.appendChild(b);
+  });
+  box.appendChild(d);
+});
+</script>
+</body>
+</html>
